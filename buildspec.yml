@@ -1,0 +1,17 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      nodejs: 16
+    commands:
+      - npm install -g pg-compare
+  pre_build:
+    commands:
+      - echo Installing source NPM pg-compare...
+      - ls
+  build:
+    commands:
+      - echo Build started on `date`
+    post_build:
+      commands:
+        - echo Build completed on `date`  

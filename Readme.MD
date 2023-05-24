@@ -1,8 +1,12 @@
-# AWS PG RDS Migration
+# Schema migration RDS - Postgres
 
-To execute
+To execute this migration it ought to follow the following steps as pre-requisites:
 
-1. Create Jenkins JOB
-2. Define the next parameters
-   -
-3. Make sure that the Jenkins credentials contains AWS Account Access Key ID and Secret
+1. Create Pipeline in AWS CodePipeline
+
+   - Define **Pipeline name**
+   - Select **New Service Role**
+   - In the source page define as **Source Provider** as **Github (Version 2)**
+     - Create new Github Connection and follow the **pop-up configuration**
+
+2.
