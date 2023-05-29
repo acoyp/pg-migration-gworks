@@ -9,10 +9,7 @@ env:
     TARGET_DATABASE_NAME: $SECRET_ARN_2:pg_db
     TARGET_USERNAME: $SECRET_ARN_2:pg_user
     TARGET_PASSWORD: $SECRET_ARN_2:pg_password
-parameters:
-  SOURCE_RDS_ARN:
-    type: String
-  
+
 phases:
   install:
     runtime-versions:
