@@ -33,8 +33,7 @@ phases:
   build:
     commands:
       - echo Build started on `date`
-  convert-schema:
-    commands:
+      - echo $SOURCE_RDS_ARN
       - aws iam get-user
       #source external database 
       # - aws sct convert-schema \
