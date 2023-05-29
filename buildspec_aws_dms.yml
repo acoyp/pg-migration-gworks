@@ -1,0 +1,89 @@
+version: 0.2
+env:
+  secrets-manager:
+    SOURCE_SERVER_NAME: $SECRET_ARN_1:pg_host
+    SOURCE_DATABASE_NAME: $SECRET_ARN_1:pg_db
+    SOURCE_USERNAME: $SECRET_ARN_1:pg_user
+    SOURCE_PASSWORD: $SECRET_ARN_1:pg_password
+    TARGET_SERVER_NAME: $SECRET_ARN_2:pg_host
+    TARGET_DATABASE_NAME: $SECRET_ARN_2:pg_db
+    TARGET_USERNAME: $SECRET_ARN_2:pg_user
+    TARGET_PASSWORD: $SECRET_ARN_2:pg_password
+parameters:
+  SOURCE_ENDPOINT_IDENTIFIER:
+    type: String
+  SOURCE_ENGINE_NAME:
+    type: String
+  SOURCE_SERVER_NAME:
+    type: String
+  SOURCE_DATABASE_NAME:
+    type: String
+  SOURCE_USERNAME:
+    type: String
+  SOURCE_PASSWORD:
+    type: String
+  TARGET_ENDPOINT_IDENTIFIER:
+    type: String
+  TARGET_ENGINE_NAME:
+    type: String
+  TARGET_SERVER_NAME:
+    type: String
+  TARGET_DATABASE_NAME:
+    type: String
+  TARGET_USERNAME:
+    type: String
+  TARGET_PASSWORD:
+    type: String
+phases:
+  install:
+    runtime-versions:
+      nodejs: 14
+    commands:
+      - npm install -g pg-compare
+      - wget https://s3.amazonaws.com/publicsctdownload/Ubuntu/aws-schema-conversion-tool-1.0.latest.zip
+      - unzip aws-schema-conversion-tool-1.0.latest.zip
+      - sudo dpkg -i aws-schema-conversion-tool-1.0.latest/aws-schema-conversion-tool-1.0.build-number.deb
+  pre_build:
+    commands:
+      - echo Installing source NPM pg-compare...
+      - ls
+      - echo Modifying pg-compare Schema
+      - \cp -r pg-compare/Schema.js /usr/local/lib/node_modules/pg-compare/lib
+
+  build:
+    commands:
+      - echo Build started on `date`
+  convert-schema:
+    commands:
+      - aws iam get-user
+      #source external database 
+      - aws sct convert-schema \
+        --source-arn "jdbc:postgresql://$EXTERNAL_DATABASE_HOST:5432/$SOURCE_DB" \
+        --source-username $EXT_DB_USERNAME \
+        --source-password $EXT_DB_PASSWORD \
+        --target-engine-name aurora-postgresql \
+        --output-folder /path/to/output
+
+      - aws sct convert-schema \
+        --source-arn arn:aws:rds:us-west-2:123456789012:db:my-source-db \
+        --target-engine-name aurora-postgresql \
+        --output-folder ./schemas/
+
+        # Replace the command with the actual generated command from AWS SCT
+      - aws sct start-replication-task --replication-task-settings file://task-settings.json \
+        --source-endpoint-arn <source-endpoint-arn> \
+        --target-endpoint-arn <target-endpoint-arn> \
+        --migration-type migrate \
+        --table-mappings file://table-mappings.json \
+        --replication-task-id <replication-task-id>
+
+  aws-validate-aws-dms-endpoints:
+    commands: 
+      - SOURCE_IF=`aws dms describe-endpoints --query "serviceArns[? @ == 'arn:aws:ecs:${AWS_REGION}:${AWS_ACCOUNT}:service/${AWS_ECS_CLUSTER}/${AWS_ECS_SERVICE}']"`
+      - ./aws_dms_migration.sh 
+
+
+    if: aws
+  post_build:
+    commands:
+      - echo Build completed on `date`  
