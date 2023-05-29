@@ -19,6 +19,7 @@ phases:
       - wget -q https://s3.amazonaws.com/publicsctdownload/Ubuntu/aws-schema-conversion-tool-1.0.latest.zip
       - unzip aws-schema-conversion-tool-1.0.latest.zip -d aws-schema-conversion-tool-1.0.latest
       - ls -R
+      - mkdir /usr/share/desktop-directories/
       - sudo dpkg -i aws-schema-conversion-tool-1.0.latest/aws-schema-conversion-tool-1.0.672.deb
   pre_build:
     commands:
