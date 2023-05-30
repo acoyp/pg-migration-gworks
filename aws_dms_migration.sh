@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set variables
-INSTANCE_IDENTIFIER="Replication-Instance-gWorks"
+INSTANCE_IDENTIFIER="replication-instance-gworks"
 INSTANCE_CLASS="dms.t3.micro"
 STORAGE_SIZE=50
 
