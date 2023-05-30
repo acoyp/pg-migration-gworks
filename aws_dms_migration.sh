@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Set variables
-INSTANCE_IDENTIFIER="Replication_Instance_gWorks"
+INSTANCE_IDENTIFIER="Replication-Instance-gWorks"
 INSTANCE_CLASS="dms.t3.micro"
 STORAGE_SIZE=50
 
-TF_OUTPUT=$(terraform output -json)
-SUBNET_ID_1=$(echo "$TF_OUTPUT" | jq -r '.subnet_a.value')
-SUBNET_ID_2=$(echo "$TF_OUTPUT" | jq -r '.subnet_b.value')
+# TF_OUTPUT=$(terraform -chdir=terraform output -json)
+# SUBNET_ID_1=$(echo "$TF_OUTPUT" | jq -r '.subnet_a.value')
+# SUBNET_ID_2=$(echo "$TF_OUTPUT" | jq -r '.subnet_b.value')
 
 SUBNET_GROUP_IDENTIFIER="my-subnet-group"
 
@@ -49,7 +49,7 @@ else
     --password "$TARGET_PASSWORD"
 fi
 
-TASK_IDENTIFIER="my-replication-task"
+TASK_IDENTIFIER="my-replication-task-gWorks"
 SOURCE_ENDPOINT_ARN=`aws dms describe-endpoints --query "Endpoints[?EndpointIdentifier=='$SOURCE_ENDPOINT_IDENTIFIER'].EndpointArn" --output text`
 TARGET_ENDPOINT_ARN=`aws dms describe-endpoints --query "Endpoints[?EndpointIdentifier=='$TARGET_ENDPOINT_IDENTIFIER'].EndpointArn" --output text`
 MIGRATION_TYPE="full-load"
@@ -61,12 +61,7 @@ aws dms create-replication-instance \
   --replication-instance-identifier "$INSTANCE_IDENTIFIER" \
   --replication-instance-class "$INSTANCE_CLASS" \
   --allocated-storage "$STORAGE_SIZE" \
-  --replication-instance-engine-version "3.4.7"
-
-# Create replication subnet group
-aws dms create-replication-subnet-group \
-  --replication-subnet-group-identifier "$SUBNET_GROUP_IDENTIFIER" \
-  --subnet-ids "$SUBNET_ID_1" "$SUBNET_ID_2"
+  --engine-version "3.4.7"
 
 # Create replication task
 aws dms create-replication-task \
@@ -85,7 +80,7 @@ aws dms start-replication-task \
 while true; do
   STATUS="$(aws dms describe-replication-tasks --filters "Name=replication-task-identifier,Values=$TASK_IDENTIFIER" --query "ReplicationTasks[0].Status" --output text)"
   echo "Migration status: $STATUS"
-  if [[ "$STATUS" == "stopped" || "$STATUS" == "failed" || "$STATUS" == "ready" ]]; then
+  if [ "$STATUS" -eq "stopped" || "$STATUS" -eq "failed" || "$STATUS" -eq "ready" ]; then
     break
   fi
   sleep 30

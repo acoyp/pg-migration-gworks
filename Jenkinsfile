@@ -51,6 +51,28 @@ pipeline {
                 }
             }
         }
+        stage('Subnets Validation (TERRAFORM)') {
+            steps {
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: "${params.AWS_CREDENTIALS_ID}",
+                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                    ]]) {
+                    script {
+                        sh """
+                            terraform -chdir=terraform init -backend-config="bucket=pg-compare-terraform" -backend-config="key=my-state-file.tfstate" -backend-config="region=us-east-1"
+                            terraform -chdir=terraform apply --auto-approve
+                        """      
+                        env.TF_OUTPUT = sh(script: "terraform -chdir=terraform output -json", returnStdout: true)
+                        env.SUBNET_ID_1 = sh(script: "echo \"${TF_OUTPUT}\" | jq -r '.subnet_a.value'", returnStdout: true)
+                        env.SUBNET_ID_1 = sh(script: "echo \"${TF_OUTPUT}\" | jq -r '.subnet_b.value'", returnStdout: true)
+
+                        echo "${SUBNET_ID_1} and ${SUBNET_ID_1}"
+                    }
+                }
+            }
+        }
         stage('Build') {
             steps {
                 withCredentials([[
@@ -61,7 +83,7 @@ pipeline {
                     ]]) {
                     script {
                         sh """
-                            
+
                             chmod 777 aws_dms_migration.sh
                             sh ./aws_dms_migration.sh
                             """    
