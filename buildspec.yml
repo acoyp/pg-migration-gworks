@@ -1,23 +1,23 @@
 version: 0.2
 env:
   secrets-manager:
-    SOURCE_SERVER_NAME: $SECRET_ARN_1:pg_host
-    SOURCE_DATABASE_NAME: $SECRET_ARN_1:pg_db
-    SOURCE_USERNAME: $SECRET_ARN_1:pg_user
-    SOURCE_PASSWORD: $SECRET_ARN_1:pg_password
-    TARGET_SERVER_NAME: $SECRET_ARN_2:pg_host
-    TARGET_DATABASE_NAME: $SECRET_ARN_2:pg_db
-    TARGET_USERNAME: $SECRET_ARN_2:pg_user
-    TARGET_PASSWORD: $SECRET_ARN_2:pg_password
+    SOURCE_SERVER_NAME: $SECRET_ARN_1:POSTGRES_HOST
+    SOURCE_DATABASE_NAME: $SECRET_ARN_1:POSTGRES_DATABASE
+    SOURCE_USERNAME: $SECRET_ARN_1:POSTGRES_USER
+    SOURCE_PASSWORD: $SECRET_ARN_1:POSTGRES_PASSWORD
+    TARGET_SERVER_NAME: $SECRET_ARN_2:POSTGRES_HOST
+    TARGET_DATABASE_NAME: $SECRET_ARN_2:POSTGRES_DATABASE
+    TARGET_USERNAME: $SECRET_ARN_2:POSTGRES_USER
+    TARGET_PASSWORD: $SECRET_ARN_2:POSTGRES_PASSWORD
 phases:
   install:
     runtime-versions:
       nodejs: 14
     commands:
       - npm install -g pg-compare
-      - wget https://s3.amazonaws.com/publicsctdownload/Ubuntu/aws-schema-conversion-tool-1.0.latest.zip
-      - unzip aws-schema-conversion-tool-1.0.latest.zip
-      - sudo dpkg -i aws-schema-conversion-tool-1.0.latest/aws-schema-conversion-tool-1.0.build-number.deb
+      # - wget https://s3.amazonaws.com/publicsctdownload/Ubuntu/aws-schema-conversion-tool-1.0.latest.zip
+      # - unzip aws-schema-conversion-tool-1.0.latest.zip
+      # - sudo dpkg -i aws-schema-conversion-tool-1.0.latest/aws-schema-conversion-tool-1.0.build-number.deb
       - echo "Installing Terraform"
       - curl -o terraform.zip https://releases.hashicorp.com/terraform/0.15.5/terraform_0.15.5_linux_amd64.zip
       - unzip terraform.zip
