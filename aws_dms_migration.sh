@@ -20,7 +20,7 @@ TARGET_ENGINE_NAME="postgres"
 
 
 # Create source endpoint
-if [ `aws dms describe-endpoints --query "Endpoints[?EndpointIdentifier=='$SOURCE_ENDPOINT_IDENTIFIER'].EndpointArn" --output text` ]; then
+if [ `aws dms describe-endpoints --query "Endpoints[?EndpointIdentifier=='$SOURCE_ENDPOINT_IDENTIFIER'].EndpointIdentifier" --output text` ]; then
     echo "AWS DMS Endpoint already exists..."
 else
     aws dms create-endpoint \
@@ -35,7 +35,7 @@ else
 fi
 
 # Create target endpoint
-if [ `aws dms describe-endpoints --query "Endpoints[?EndpointIdentifier=='$TARGET_ENDPOINT_IDENTIFIER'].EndpointArn" --output text` ]; then
+if [ `aws dms describe-endpoints --query "Endpoints[?EndpointIdentifier=='$TARGET_ENDPOINT_IDENTIFIER'].EndpointIdentifier" --output text` ]; then
     echo "AWS DMS Endpoint already exists..."
 else
   aws dms create-endpoint \
@@ -53,9 +53,9 @@ TASK_IDENTIFIER="my-replication-task-gWorks"
 SOURCE_ENDPOINT_ARN=`aws dms describe-endpoints --query "Endpoints[?EndpointIdentifier=='$SOURCE_ENDPOINT_IDENTIFIER'].EndpointArn" --output text`
 TARGET_ENDPOINT_ARN=`aws dms describe-endpoints --query "Endpoints[?EndpointIdentifier=='$TARGET_ENDPOINT_IDENTIFIER'].EndpointArn" --output text`
 MIGRATION_TYPE="full-load"
-TABLE_MAPPINGS_FILE="table-mappings.json"
+TABLE_MAPPINGS_FILE="table-mapping.json"
 
-if [ `aws dms describe-replication-instances --query "ReplicationInstances[?ReplicationInstanceIdentifier=='$INSTANCE_IDENTIFIER']" --output text` ]; then
+if [ `aws dms describe-replication-instances --query "ReplicationInstances[?ReplicationInstanceIdentifier=='$INSTANCE_IDENTIFIER'].ReplicationInstanceIdentifier" --output text` ]; then
   echo "Instance Already Exists..."
 else
 # Create replication instance
@@ -66,7 +66,7 @@ else
     --engine-version "3.4.7"
 fi
 
-if [ `aws dms describe-replication-tasks --query "ReplicationTasks[?ReplicationTaskIdentifier=='$TASK_IDENTIFIER'].ReplicationTaskArn" --output text` ]; then
+if [ `aws dms describe-replication-tasks --query "ReplicationTasks[?ReplicationTaskIdentifier=='$TASK_IDENTIFIER'].ReplicationTaskIdentifier" --output text` ]; then
   echo "Replication Task already exists..."
 else
 # Create replication task
