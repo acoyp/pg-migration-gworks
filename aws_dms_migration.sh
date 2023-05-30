@@ -73,8 +73,7 @@ aws dms create-replication-task \
   --target-endpoint-arn "$TARGET_ENDPOINT_ARN" \
   --replication-instance-arn "$(aws dms describe-replication-instances --query "ReplicationInstances[?ReplicationInstanceIdentifier=='$INSTANCE_IDENTIFIER'].ReplicationInstanceArn" --output text)" \
   --migration-type "$MIGRATION_TYPE" \
-  --table-mappings "file://./$TABLE_MAPPINGS_FILE" \
-  --recovery-type "SCHEMA_CONVERSION"
+  --table-mappings "file://./$TABLE_MAPPINGS_FILE" 
 
 # Start replication task
 aws dms start-replication-task \
