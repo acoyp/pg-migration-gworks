@@ -20,22 +20,22 @@ TARGET_ENGINE_NAME="postgres"
 
 
 # Create source endpoint
-if [ -z `aws dms describe-endpoints --query "Endpoints[?EndpointIdentifier=='$SOURCE_ENDPOINT_IDENTIFIER'].EndpointArn" --output text` ]; then
+if [ `aws dms describe-endpoints --query "Endpoints[?EndpointIdentifier=='$SOURCE_ENDPOINT_IDENTIFIER'].EndpointArn" --output text` ]; then
     echo "AWS DMS Endpoint already exists..."
 else
-    echo " aws dms create-endpoint \
-    --endpoint-identifier \"$SOURCE_ENDPOINT_IDENTIFIER\" \
-    --endpoint-type \"source\" \
-    --engine-name \"$SOURCE_ENGINE_NAME\" \
-    --server-name \"$SOURCE_SERVER_NAME\" \
-    --port \"5432\" \
-    --database-name \"$SOURCE_DATABASE_NAME\" \
-    --username \"$SOURCE_USERNAME\" \
-    --password \"$SOURCE_PASSWORD\" "
+    aws dms create-endpoint \
+    --endpoint-identifier "$SOURCE_ENDPOINT_IDENTIFIER" \
+    --endpoint-type "source" \
+    --engine-name "$SOURCE_ENGINE_NAME" \
+    --server-name "$SOURCE_SERVER_NAME" \
+    --port "5432" \
+    --database-name "$SOURCE_DATABASE_NAME" \
+    --username "$SOURCE_USERNAME" \
+    --password "$SOURCE_PASSWORD"
 fi
 
 # Create target endpoint
-if [ -z `aws dms describe-endpoints --query "Endpoints[?EndpointIdentifier=='$TARGET_ENDPOINT_IDENTIFIER'].EndpointArn" --output text` ]; then
+if [ `aws dms describe-endpoints --query "Endpoints[?EndpointIdentifier=='$TARGET_ENDPOINT_IDENTIFIER'].EndpointArn" --output text` ]; then
     echo "AWS DMS Endpoint already exists..."
 else
   aws dms create-endpoint \
@@ -47,6 +47,7 @@ else
     --port "5432" \
     --username "$TARGET_USERNAME" \
     --password "$TARGET_PASSWORD"
+fi
 
 TASK_IDENTIFIER="my-replication-task"
 SOURCE_ENDPOINT_ARN=`aws dms describe-endpoints --query "Endpoints[?EndpointIdentifier=='$SOURCE_ENDPOINT_IDENTIFIER'].EndpointArn" --output text`
