@@ -33,23 +33,22 @@ phases:
     commands:
       - echo Build started on `date`
       - echo source db $SOURCE_RDS_ARN
-      - |
-        handle_error() {
-          echo "An error occurred"
-          # Add any necessary cleanup or error handling logic here
-          exit 1
-        }
+      # - |
+      #   handle_error() {
+      #     echo "An error occurred"
+      #     exit 1
+      #   }
         
-        # Try block
-        try {
-          echo "Performing some aws cli option..."
-          aws iam get-user
-        }
+      #   # Try block
+      #   try {
+      #     echo "Performing some aws cli option..."
+      #     aws iam get-user
+      #   }
         
-        # Catch block
-        catch {
-          handle_error
-        }
+      #   # Catch block
+      #   catch {
+      #     handle_error
+      #   }
         
 
       #source external database 
