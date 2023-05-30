@@ -31,15 +31,12 @@ else
     --port \"5432\" \
     --database-name \"$SOURCE_DATABASE_NAME\" \
     --username \"$SOURCE_USERNAME\" \
-    --password \"$SOURCE_PASSWORD\"
-    "
-
+    --password \"$SOURCE_PASSWORD\" "
 fi
 
 # Create target endpoint
-if [[ `aws dms describe-endpoints --query "Endpoints[?EndpointIdentifier=='$TARGET_ENDPOINT_IDENTIFIER'].EndpointArn" --output text` ]]; then
+if [ -z `aws dms describe-endpoints --query "Endpoints[?EndpointIdentifier=='$TARGET_ENDPOINT_IDENTIFIER'].EndpointArn" --output text` ]; then
     echo "AWS DMS Endpoint already exists..."
-
 else
   aws dms create-endpoint \
     --endpoint-identifier "$TARGET_ENDPOINT_IDENTIFIER" \

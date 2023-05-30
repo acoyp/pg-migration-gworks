@@ -36,14 +36,14 @@ pipeline {
                         def target_secretJson = readJSON text: target_secretValue
                         
                         // Get the specific key from the secret
-                        def SOURCE_SERVER_NAME = source_secretJson.POSTGRES_HOST
-                        def SOURCE_DATABASE_NAME = source_secretJson.POSTGRES_DATABASE
-                        def SOURCE_USERNAME = source_secretJson.POSTGRES_USER
-                        def SOURCE_PASSWORD = source_secretJson.POSTGRES__PASSWORD
-                        def TARGET_SERVER_NAME = target_secretJson.POSTGRES_HOST
-                        def TARGET_DATABASE_NAME = target_secretJson.POSTGRES_DATABASE
-                        def TARGET_USERNAME = target_secretJson.POSTGRES_USER
-                        def TARGET_PASSWORD = target_secretJson.POSTGRES__PASSWORD
+                        env.SOURCE_SERVER_NAME = source_secretJson.POSTGRES_HOST
+                        env.SOURCE_DATABASE_NAME = source_secretJson.POSTGRES_DATABASE
+                        env.SOURCE_USERNAME = source_secretJson.POSTGRES_USER
+                        env.SOURCE_PASSWORD = source_secretJson.POSTGRES__PASSWORD
+                        env.TARGET_SERVER_NAME = target_secretJson.POSTGRES_HOST
+                        env.TARGET_DATABASE_NAME = target_secretJson.POSTGRES_DATABASE
+                        env.TARGET_USERNAME = target_secretJson.POSTGRES_USER
+                        env.TARGET_PASSWORD = target_secretJson.POSTGRES__PASSWORD
                         
                         echo "The value of POSTGRES_HOST_DB1 is: ${SOURCE_SERVER_NAME}"
                         echo "The value of POSTGRES_HOST_DB2 is: ${TARGET_SERVER_NAME}"       
@@ -61,6 +61,7 @@ pipeline {
                     ]]) {
                     script {
                         sh """
+                            
                             chmod 777 aws_dms_migration.sh
                             sh ./aws_dms_migration.sh
                             """    
