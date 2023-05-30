@@ -55,30 +55,35 @@ TARGET_ENDPOINT_ARN=`aws dms describe-endpoints --query "Endpoints[?EndpointIden
 MIGRATION_TYPE="full-load"
 TABLE_MAPPINGS_FILE="table-mappings.json"
 
-
+if [ `aws dms describe-replication-instances --query "ReplicationInstances[?ReplicationInstanceIdentifier=='$INSTANCE_IDENTIFIER']" --output text` ]; then
+  echo "Instance Already Exists..."
+else
 # Create replication instance
-aws dms create-replication-instance \
-  --replication-instance-identifier "$INSTANCE_IDENTIFIER" \
-  --replication-instance-class "$INSTANCE_CLASS" \
-  --allocated-storage "$STORAGE_SIZE" \
-  --engine-version "3.4.7"
+  aws dms create-replication-instance \
+    --replication-instance-identifier "$INSTANCE_IDENTIFIER" \
+    --replication-instance-class "$INSTANCE_CLASS" \
+    --allocated-storage "$STORAGE_SIZE" \
+    --engine-version "3.4.7"
+fi
 
 # Create replication task
 aws dms create-replication-task \
   --replication-task-identifier "$TASK_IDENTIFIER" \
   --source-endpoint-arn "$SOURCE_ENDPOINT_ARN" \
   --target-endpoint-arn "$TARGET_ENDPOINT_ARN" \
+  --replication-instance-arn "$(aws dms describe-replication-instances --query "ReplicationInstances[?ReplicationInstanceIdentifier=='$INSTANCE_IDENTIFIER'].ReplicationInstanceArn" --output text)" \
   --migration-type "$MIGRATION_TYPE" \
   --table-mappings "file://./$TABLE_MAPPINGS_FILE" \
   --recovery-type "SCHEMA_CONVERSION"
 
 # Start replication task
 aws dms start-replication-task \
-  --replication-task-arn "$(aws dms describe-replication-tasks --filters "Name=replication-task-identifier,Values=$TASK_IDENTIFIER" --query "ReplicationTasks[0].ReplicationTaskArn" --output text)"
+  --start-replication-task-type "start-replication" \
+  --replication-task-arn "$(aws dms describe-replication-tasks --query "ReplicationTasks[?ReplicationTaskIdentifier=='$TASK_IDENTIFIER'].ReplicationTaskArn" --output text)"
 
 # Monitor migration progress
 while true; do
-  STATUS="$(aws dms describe-replication-tasks --filters "Name=replication-task-identifier,Values=$TASK_IDENTIFIER" --query "ReplicationTasks[0].Status" --output text)"
+  STATUS="$(aws dms describe-replication-tasks --query "ReplicationTasks[?ReplicationTaskIdentifier=='$TASK_IDENTIFIER'].Status" --output text)"
   echo "Migration status: $STATUS"
   if [ "$STATUS" -eq "stopped" || "$STATUS" -eq "failed" || "$STATUS" -eq "ready" ]; then
     break
