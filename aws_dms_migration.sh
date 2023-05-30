@@ -12,11 +12,11 @@ SUBNET_ID_2=$(echo "$TF_OUTPUT" | jq -r '.subnet_b.value')
 SUBNET_GROUP_IDENTIFIER="my-subnet-group"
 
 SOURCE_ENDPOINT_IDENTIFIER="${PROJECT_NAME}SourceEndpoint"
-SOURCE_ENGINE_NAME="postgresql"
+SOURCE_ENGINE_NAME="postgres"
 
 
 TARGET_ENDPOINT_IDENTIFIER="${PROJECT_NAME}TargetEndpoint"
-TARGET_ENGINE_NAME="postgresql"
+TARGET_ENGINE_NAME="postgres"
 
 
 # Create source endpoint
