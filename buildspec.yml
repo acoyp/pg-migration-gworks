@@ -36,6 +36,7 @@ phases:
 
   build:
     commands:
+    # Tests
       - echo Execute Main AWS DBs Migration
       - chmod 777 aws_dms_migration.sh 
       - ./aws_dms_migration.sh 
