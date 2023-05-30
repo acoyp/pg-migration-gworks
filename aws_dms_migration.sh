@@ -54,6 +54,8 @@ SOURCE_ENDPOINT_ARN=$(aws dms describe-endpoints --query "Endpoints[?EndpointIde
 TARGET_ENDPOINT_ARN=$(aws dms describe-endpoints --query "Endpoints[?EndpointIdentifier=='$TARGET_ENDPOINT_IDENTIFIER'].EndpointArn" --output text)
 MIGRATION_TYPE="full-load"
 TABLE_MAPPINGS_FILE="table_mapping.json"
+echo $SOURCE_ENDPOINT_ARN
+echo $TARGET_ENDPOINT_ARN
 
 if [ `aws dms describe-replication-instances --query "ReplicationInstances[?ReplicationInstanceIdentifier=='$INSTANCE_IDENTIFIER'].ReplicationInstanceIdentifier" --output text` ]; then
   echo "Instance Already Exists..."
@@ -79,10 +81,12 @@ else
     --table-mappings "file://./$TABLE_MAPPINGS_FILE" 
 fi
 
+REPLICATION_TASK_ARN=$(aws dms describe-replication-tasks --query "ReplicationTasks[?ReplicationTaskIdentifier=='$TASK_IDENTIFIER'].ReplicationTaskArn" --output text)
+echo $REPLICATION_TASK_ARN
 # Start replication task
 aws dms start-replication-task \
   --start-replication-task-type "start-replication" \
-  --replication-task-arn "$(aws dms describe-replication-tasks --query "ReplicationTasks[?ReplicationTaskIdentifier=='$TASK_IDENTIFIER'].ReplicationTaskArn" --output text)"
+  --replication-task-arn "$REPLICATION_TASK_ARN"
 
 # Monitor migration progress
 while true; do
