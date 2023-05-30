@@ -20,7 +20,7 @@ TARGET_ENGINE_NAME="postgres"
 
 
 # Create source endpoint
-if [[ `aws dms describe-endpoints --query "Endpoints[?EndpointIdentifier=='$SOURCE_ENDPOINT_IDENTIFIER'].EndpointArn" --output text` == "$SOURCE_ENDPOINT_IDENTIFIER" ]]; then
+if [[ `aws dms describe-endpoints --query "Endpoints[?EndpointIdentifier=='$SOURCE_ENDPOINT_IDENTIFIER'].EndpointArn" --output text` ]]; then
     echo "AWS DMS Endpoint already exists..."
 else
     echo " aws dms create-endpoint \
@@ -37,7 +37,7 @@ else
 fi
 
 # Create target endpoint
-if [[ `aws dms describe-endpoints --query "Endpoints[?EndpointIdentifier=='$TARGET_ENDPOINT_IDENTIFIER'].EndpointArn" --output text` == $TARGET_ENDPOINT_IDENTIFIER ]]; then
+if [[ `aws dms describe-endpoints --query "Endpoints[?EndpointIdentifier=='$TARGET_ENDPOINT_IDENTIFIER'].EndpointArn" --output text` ]]; then
     echo "AWS DMS Endpoint already exists..."
 
 else
