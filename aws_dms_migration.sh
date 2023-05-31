@@ -51,7 +51,7 @@ else
     --password "$TARGET_PASSWORD"
 fi
 
-TASK_IDENTIFIER="my-replication-task-gWorks"
+TASK_IDENTIFIER="my-replication-task-gworks"
 SOURCE_ENDPOINT_ARN="`aws dms describe-endpoints --query "Endpoints[?EndpointIdentifier=='$SOURCE_ENDPOINT_IDENTIFIER'].EndpointArn" --output text`"
 TARGET_ENDPOINT_ARN="`aws dms describe-endpoints --query "Endpoints[?EndpointIdentifier=='$TARGET_ENDPOINT_IDENTIFIER'].EndpointArn" --output text`"
 MIGRATION_TYPE="full-load"
