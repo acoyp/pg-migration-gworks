@@ -78,12 +78,12 @@ else
     --replication-task-identifier "$TASK_IDENTIFIER" \
     --source-endpoint-arn "$SOURCE_ENDPOINT_ARN" \
     --target-endpoint-arn "$TARGET_ENDPOINT_ARN" \
-    --replication-instance-arn "$(aws dms describe-replication-instances --query "ReplicationInstances[?ReplicationInstanceIdentifier=='$INSTANCE_IDENTIFIER'].ReplicationInstanceArn" --output text)" \
+    --replication-instance-arn "`aws dms describe-replication-instances --query "ReplicationInstances[?ReplicationInstanceIdentifier=='$INSTANCE_IDENTIFIER'].ReplicationInstanceArn" --output text`" \
     --migration-type "$MIGRATION_TYPE" \
     --table-mappings "file://./$TABLE_MAPPINGS_FILE" 
 fi
 
-REPLICATION_TASK_ARN=$(aws dms describe-replication-tasks --query "ReplicationTasks[?ReplicationTaskIdentifier=='$TASK_IDENTIFIER'].ReplicationTaskArn" --output text)
+REPLICATION_TASK_ARN="`aws dms describe-replication-tasks --query "ReplicationTasks[?ReplicationTaskIdentifier=='$TASK_IDENTIFIER'].ReplicationTaskArn" --output text`"
 echo $REPLICATION_TASK_ARN
 # Start replication task
 aws dms start-replication-task \
