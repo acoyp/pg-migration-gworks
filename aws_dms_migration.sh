@@ -15,7 +15,7 @@ SOURCE_ENDPOINT_IDENTIFIER="${PROJECT_NAME}source01endpoint"
 SOURCE_ENGINE_NAME="postgres"
 
 
-TARGET_ENDPOINT_IDENTIFIER="${PROJECT_NAME}target01ndpoint"
+TARGET_ENDPOINT_IDENTIFIER="${PROJECT_NAME}target01endpoint"
 TARGET_ENGINE_NAME="postgres"
 
 
@@ -94,7 +94,7 @@ aws dms start-replication-task \
 while true; do
   STATUS="$(aws dms describe-replication-tasks --query "ReplicationTasks[?ReplicationTaskIdentifier=='$TASK_IDENTIFIER'].Status" --output text)"
   echo "Migration status: $STATUS"
-  if [ "$STATUS" -eq "stopped" || "$STATUS" -eq "failed" || "$STATUS" -eq "ready" ]; then
+  if [[ "$STATUS" == "stopped" || "$STATUS" == "failed" || "$STATUS" == "ready" ]]; then
     break
   fi
   sleep 30
