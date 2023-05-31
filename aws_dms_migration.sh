@@ -52,8 +52,8 @@ else
 fi
 
 TASK_IDENTIFIER="my-replication-task-gWorks"
-SOURCE_ENDPOINT_ARN=`aws dms describe-endpoints --query "Endpoints[?EndpointIdentifier=='$SOURCE_ENDPOINT_IDENTIFIER'].EndpointArn" --output text`
-TARGET_ENDPOINT_ARN=`aws dms describe-endpoints --query "Endpoints[?EndpointIdentifier=='$TARGET_ENDPOINT_IDENTIFIER'].EndpointArn" --output text`
+SOURCE_ENDPOINT_ARN="`aws dms describe-endpoints --query "Endpoints[?EndpointIdentifier=='$SOURCE_ENDPOINT_IDENTIFIER'].EndpointArn" --output text`"
+TARGET_ENDPOINT_ARN="`aws dms describe-endpoints --query "Endpoints[?EndpointIdentifier=='$TARGET_ENDPOINT_IDENTIFIER'].EndpointArn" --output text`"
 MIGRATION_TYPE="full-load"
 TABLE_MAPPINGS_FILE="table_mapping.json"
 echo $SOURCE_ENDPOINT_ARN
