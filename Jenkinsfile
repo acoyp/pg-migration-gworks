@@ -10,6 +10,10 @@ pipeline {
     }
     environment{
         AWS_REGION = 'us-east-1'
+        PROJECT_NAME = 'gworksdbmigration'
+        INSTANCE_IDENTIFIER = "replication-instance-gworks"
+        INSTANCE_CLASS = "dms.t3.micro"
+        STORAGE_SIZE = "50"
     }
     stages {
         stage('checkout') {
@@ -44,14 +48,21 @@ pipeline {
                         env.TARGET_DATABASE_NAME = target_secretJson.POSTGRES_DATABASE
                         env.TARGET_USERNAME = target_secretJson.POSTGRES_USER
                         env.TARGET_PASSWORD = target_secretJson.POSTGRES__PASSWORD
+
+                        env.SOURCE_ENDPOINT_IDENTIFIER = "${PROJECT_NAME}SourceEndpoint"
+                        env.SOURCE_ENGINE_NAME = "postgres"
+
+
+                        env.TARGET_ENDPOINT_IDENTIFIER = "${PROJECT_NAME}TargetEndpoint"
+                        env.TARGET_ENGINE_NAME = "postgres"
                         
-                        echo "The value of POSTGRES_HOST_DB1 is: ${SOURCE_SERVER_NAME}"
-                        echo "The value of POSTGRES_HOST_DB2 is: ${TARGET_SERVER_NAME}"       
+                        echo "The value of POSTGRES_HOST_DB1 is: ${TARGET_ENDPOINT_IDENTIFIER}"
+                        echo "The value of POSTGRES_HOST_DB2 is: ${SOURCE_ENDPOINT_IDENTIFIER}"       
                     }
                 }
             }
         }
-        stage('Subnets Validation (TERRAFORM)') {
+        stage('Endpoint Validation') {
             steps {
                 withCredentials([[
                     $class: 'AmazonWebServicesCredentialsBinding',
@@ -60,33 +71,47 @@ pipeline {
                     secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
                     ]]) {
                     script {
-                        sh """
-                            terraform -chdir=terraform init -backend-config="bucket=pg-compare-terraform" -backend-config="key=my-state-file.tfstate" -backend-config="region=us-east-1"
-                            terraform -chdir=terraform apply --auto-approve
-                        """      
-                        env.TF_OUTPUT = sh(script: "terraform -chdir=terraform output -json", returnStdout: true)
-                        env.SUBNET_ID_1 = sh(script: "echo \"${TF_OUTPUT}\" | jq -r '.subnet_a.value'", returnStdout: true)
-                        env.SUBNET_ID_1 = sh(script: "echo \"${TF_OUTPUT}\" | jq -r '.subnet_b.value'", returnStdout: true)
-
-                        echo "${SUBNET_ID_1} and ${SUBNET_ID_1}"
-                    }
-                }
-            }
-        }
-        stage('Build') {
-            steps {
-                withCredentials([[
-                    $class: 'AmazonWebServicesCredentialsBinding',
-                    credentialsId: "${params.AWS_CREDENTIALS_ID}",
-                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-                    ]]) {
-                    script {
-                        sh """
-
-                            chmod 777 aws_dms_migration.sh
-                            sh ./aws_dms_migration.sh
-                            """    
+                        env.SOURCE_VALIDATION = sh(script: """"
+                            aws dms describe-endpoints --query "Endpoints[?EndpointIdentifier=='${SOURCE_ENDPOINT_IDENTIFIER}'].EndpointIdentifier" --output text
+                            """, returnStdout: true).trim()
+                        env.TARGET_VALIDATION = sh(script: """"
+                            aws dms describe-endpoints --query "Endpoints[?EndpointIdentifier=='${TARGET_ENDPOINT_IDENTIFIER}'].EndpointIdentifier" --output text
+                            """, returnStdout: true).trim()
+                        if (env.SOURCE_VALIDATION != null){
+                            echo "AWS DMS Endpoint already exists..."
+                        }
+                        else{
+                            echo "AWS DMS doesn't exists..."
+                            sh """"
+                                aws dms create-endpoint \
+                                    --endpoint-identifier "${SOURCE_ENDPOINT_IDENTIFIER}" \
+                                    --endpoint-type "source" \
+                                    --engine-name "${SOURCE_ENGINE_NAME}" \
+                                    --server-name "${SOURCE_SERVER_NAME}" \
+                                    --port "5432" \
+                                    --database-name "${SOURCE_DATABASE_NAME}" \
+                                    --username "${SOURCE_USERNAME}" \
+                                    --password "${SOURCE_PASSWORD}"
+                                fi
+                            """
+                        if (env.TARGET_VALIDATION != null){
+                            echo "AWS DMS Endpoint already exists..."
+                        }
+                        else{
+                            echo "AWS DMS doesn't exists..."
+                            sh """"
+                                aws dms create-endpoint \
+                                    --endpoint-identifier "${TARGET_ENDPOINT_IDENTIFIER}" \
+                                    --endpoint-type "TARGET" \
+                                    --engine-name "${TARGET_ENGINE_NAME}" \
+                                    --server-name "${TARGET_SERVER_NAME}" \
+                                    --port "5432" \
+                                    --database-name "${TARGET_DATABASE_NAME}" \
+                                    --username "${TARGET_USERNAME}" \
+                                    --password "${TARGET_PASSWORD}"
+                                fi
+                            """
+                          
                     }
                 }
             }

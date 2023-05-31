@@ -56,7 +56,7 @@ SOURCE_ENDPOINT_ARN="`aws dms describe-endpoints --query "Endpoints[?EndpointIde
 TARGET_ENDPOINT_ARN="`aws dms describe-endpoints --query "Endpoints[?EndpointIdentifier=='$TARGET_ENDPOINT_IDENTIFIER'].EndpointArn" --output text`"
 MIGRATION_TYPE="full-load"
 TABLE_MAPPINGS_FILE="table_mapping.json"
-echo $SOURCE_ENDPOINT_ARN
+echo ${SOURCE_ENDPOINT_ARN}
 echo $TARGET_ENDPOINT_ARN
 
 if [ `aws dms describe-replication-instances --query "ReplicationInstances[?ReplicationInstanceIdentifier=='$INSTANCE_IDENTIFIER'].ReplicationInstanceIdentifier" --output text` ]; then
