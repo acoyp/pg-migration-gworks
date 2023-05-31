@@ -62,7 +62,7 @@ pipeline {
                 }
             }
         }
-        stage('Pre Build') {
+        stage('Build') {
             steps {
                 withCredentials([[
                     $class: 'AmazonWebServicesCredentialsBinding',
@@ -73,7 +73,7 @@ pipeline {
                     script {
                         echo "AWD DMS Migration..."  
                         sh """
-                            sh ./aws_dms_migration
+                            sh aws_dms_migration.sh
                         """    
                     }
                 }

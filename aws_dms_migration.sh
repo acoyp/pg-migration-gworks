@@ -24,15 +24,15 @@ if [ `aws dms describe-endpoints --query "Endpoints[?EndpointIdentifier=='$SOURC
   echo "AWS DMS Endpoint already exists..."
 else
   echo "AWS DMS doesn't exists..."
-  # aws dms create-endpoint \
-  #   --endpoint-identifier "$SOURCE_ENDPOINT_IDENTIFIER" \
-  #   --endpoint-type "source" \
-  #   --engine-name "$SOURCE_ENGINE_NAME" \
-  #   --server-name "$SOURCE_SERVER_NAME" \
-  #   --port "5432" \
-  #   --database-name "$SOURCE_DATABASE_NAME" \
-  #   --username "$SOURCE_USERNAME" \
-  #   --password "$SOURCE_PASSWORD"
+  aws dms create-endpoint \
+    --endpoint-identifier "$SOURCE_ENDPOINT_IDENTIFIER" \
+    --endpoint-type "source" \
+    --engine-name "$SOURCE_ENGINE_NAME" \
+    --server-name "$SOURCE_SERVER_NAME" \
+    --port "5432" \
+    --database-name "$SOURCE_DATABASE_NAME" \
+    --username "$SOURCE_USERNAME" \
+    --password "$SOURCE_PASSWORD"
 fi
 
 # Create target endpoint
@@ -40,15 +40,15 @@ if [ `aws dms describe-endpoints --query "Endpoints[?EndpointIdentifier=='$TARGE
   echo "AWS DMS Endpoint already exists..."
 else
   echo "AWS DMS doesn't exists..."
-  # aws dms create-endpoint \
-  #   --endpoint-identifier "$TARGET_ENDPOINT_IDENTIFIER" \
-  #   --endpoint-type "target" \
-  #   --engine-name "$TARGET_ENGINE_NAME" \
-  #   --server-name "$TARGET_SERVER_NAME" \
-  #   --database-name "$TARGET_DATABASE_NAME" \
-  #   --port "5432" \
-  #   --username "$TARGET_USERNAME" \
-  #   --password "$TARGET_PASSWORD"
+  aws dms create-endpoint \
+    --endpoint-identifier "$TARGET_ENDPOINT_IDENTIFIER" \
+    --endpoint-type "target" \
+    --engine-name "$TARGET_ENGINE_NAME" \
+    --server-name "$TARGET_SERVER_NAME" \
+    --database-name "$TARGET_DATABASE_NAME" \
+    --port "5432" \
+    --username "$TARGET_USERNAME" \
+    --password "$TARGET_PASSWORD"
 fi
 
 TASK_IDENTIFIER="my-replication-task-gWorks"
