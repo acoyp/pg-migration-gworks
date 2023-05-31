@@ -49,11 +49,11 @@ pipeline {
                         env.TARGET_USERNAME = target_secretJson.POSTGRES_USER
                         env.TARGET_PASSWORD = target_secretJson.POSTGRES__PASSWORD
 
-                        env.SOURCE_ENDPOINT_IDENTIFIER = "${PROJECT_NAME}SourceEndpoint"
+                        env.SOURCE_ENDPOINT_IDENTIFIER = "${env.PROJECT_NAME}source01endpoint"
                         env.SOURCE_ENGINE_NAME = "postgres"
 
 
-                        env.TARGET_ENDPOINT_IDENTIFIER = "${PROJECT_NAME}TargetEndpoint"
+                        env.TARGET_ENDPOINT_IDENTIFIER = "${env.PROJECT_NAME}target01endpoint"
                         env.TARGET_ENGINE_NAME = "postgres"
                         
                         echo "The value of POSTGRES_HOST_DB1 is: ${TARGET_ENDPOINT_IDENTIFIER}"
@@ -62,7 +62,7 @@ pipeline {
                 }
             }
         }
-        stage('Endpoint Validation') {
+        stage('Pre Build') {
             steps {
                 withCredentials([[
                     $class: 'AmazonWebServicesCredentialsBinding',
@@ -71,50 +71,69 @@ pipeline {
                     secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
                     ]]) {
                     script {
-                        env.SOURCE_VALIDATION = sh(script: """"
-                            aws dms describe-endpoints --query "Endpoints[?EndpointIdentifier=='${SOURCE_ENDPOINT_IDENTIFIER}'].EndpointIdentifier" --output text
-                            """, returnStdout: true).trim()
-                        env.TARGET_VALIDATION = sh(script: """"
-                            aws dms describe-endpoints --query "Endpoints[?EndpointIdentifier=='${TARGET_ENDPOINT_IDENTIFIER}'].EndpointIdentifier" --output text
-                            """, returnStdout: true).trim()
-                        if (env.SOURCE_VALIDATION != null){
-                            echo "AWS DMS Endpoint already exists..."
-                        }
-                        else{
-                            echo "AWS DMS doesn't exists..."
-                            sh """"
-                                aws dms create-endpoint \
-                                    --endpoint-identifier "${SOURCE_ENDPOINT_IDENTIFIER}" \
-                                    --endpoint-type "source" \
-                                    --engine-name "${SOURCE_ENGINE_NAME}" \
-                                    --server-name "${SOURCE_SERVER_NAME}" \
-                                    --port "5432" \
-                                    --database-name "${SOURCE_DATABASE_NAME}" \
-                                    --username "${SOURCE_USERNAME}" \
-                                    --password "${SOURCE_PASSWORD}"
-                                fi
-                            """
-                        if (env.TARGET_VALIDATION != null){
-                            echo "AWS DMS Endpoint already exists..."
-                        }
-                        else{
-                            echo "AWS DMS doesn't exists..."
-                            sh """"
-                                aws dms create-endpoint \
-                                    --endpoint-identifier "${TARGET_ENDPOINT_IDENTIFIER}" \
-                                    --endpoint-type "TARGET" \
-                                    --engine-name "${TARGET_ENGINE_NAME}" \
-                                    --server-name "${TARGET_SERVER_NAME}" \
-                                    --port "5432" \
-                                    --database-name "${TARGET_DATABASE_NAME}" \
-                                    --username "${TARGET_USERNAME}" \
-                                    --password "${TARGET_PASSWORD}"
-                                fi
-                            """
-                          
+                        echo "AWD DMS Migration..."  
+                        sh """
+                            sh ./aws_dms_migration
+                        """    
                     }
                 }
             }
         }
+        // stage('Endpoint Validation') {
+        //     steps {
+        //         withCredentials([[
+        //             $class: 'AmazonWebServicesCredentialsBinding',
+        //             credentialsId: "${params.AWS_CREDENTIALS_ID}",
+        //             accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+        //             secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+        //             ]]) {
+        //             script {
+        //                 def SOURCE_VALIDATION = sh(script: """"
+        //                     aws dms describe-endpoints --query "Endpoints[?EndpointIdentifier=='${SOURCE_ENDPOINT_IDENTIFIER}'].EndpointIdentifier" --output text
+        //                     """, returnStdout: true).trim()
+        //                 def TARGET_VALIDATION = sh(script: """"
+        //                     aws dms describe-endpoints --query "Endpoints[?EndpointIdentifier=='${TARGET_ENDPOINT_IDENTIFIER}'].EndpointIdentifier" --output text
+        //                     """, returnStdout: true).trim()
+        //                 if (SOURCE_VALIDATION != null){
+        //                     echo "AWS DMS Endpoint already exists..."
+        //                 }
+        //                 else{
+        //                     echo "AWS DMS doesn't exists..."
+        //                     sh """
+        //                         aws dms create-endpoint \
+        //                             --endpoint-identifier "${SOURCE_ENDPOINT_IDENTIFIER}" \
+        //                             --endpoint-type "source" \
+        //                             --engine-name "${SOURCE_ENGINE_NAME}" \
+        //                             --server-name "${SOURCE_SERVER_NAME}" \
+        //                             --port "5432" \
+        //                             --database-name "${SOURCE_DATABASE_NAME}" \
+        //                             --username "${SOURCE_USERNAME}" \
+        //                             --password "${SOURCE_PASSWORD}"
+        //                         fi
+        //                     """
+        //                 }
+        //                 if (TARGET_VALIDATION != null){
+        //                     echo "AWS DMS Endpoint already exists..."
+        //                 }
+        //                 else{
+        //                     echo "AWS DMS doesn't exists..."
+        //                     sh """
+        //                         aws dms create-endpoint \
+        //                             --endpoint-identifier "${TARGET_ENDPOINT_IDENTIFIER}" \
+        //                             --endpoint-type "TARGET" \
+        //                             --engine-name "${TARGET_ENGINE_NAME}" \
+        //                             --server-name "${TARGET_SERVER_NAME}" \
+        //                             --port "5432" \
+        //                             --database-name "${TARGET_DATABASE_NAME}" \
+        //                             --username "${TARGET_USERNAME}" \
+        //                             --password "${TARGET_PASSWORD}"
+        //                         fi
+        //                     """
+        //                 }
+                          
+        //             }
+        //         }
+        //     }
+        // }
     }
 }
