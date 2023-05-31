@@ -32,7 +32,7 @@ else
     --port "5432" \
     --database-name "$SOURCE_DATABASE_NAME" \
     --username "$SOURCE_USERNAME" \
-    --password "$SOURCE_PASSWORD"
+    --password "{$SOURCE_PASSWORD}"
 fi
 
 # Create target endpoint
@@ -48,7 +48,7 @@ else
     --database-name "$TARGET_DATABASE_NAME" \
     --port "5432" \
     --username "$TARGET_USERNAME" \
-    --password "$TARGET_PASSWORD"
+    --password "{$TARGET_PASSWORD}"
 fi
 
 TASK_IDENTIFIER="my-replication-task-gworks"
