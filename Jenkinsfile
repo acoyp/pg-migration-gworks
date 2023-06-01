@@ -89,7 +89,7 @@ pipeline {
                         def target_username = env.TARGET_USERNAME
                         def target_password = env.TARGET_PASSWORD
                         sh '''
-                            ./json_modify.sh
+                            sh json_modify.sh
                         '''
 
                     }
