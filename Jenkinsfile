@@ -89,17 +89,7 @@ pipeline {
                         def target_username = env.TARGET_USERNAME
                         def target_password = env.TARGET_PASSWORD
                         sh '''
-                            DB_DATA=\$(cat compareDBs.json)
-                            echo ${source_password}
-                            DB_DATA=\$(jq '.connection1.host = ${source_server_name}' <<< "$DB_DATA")
-                            DB_DATA=\$(jq '.connection1.database = ${source_database_name}' <<< "$DB_DATA")
-                            DB_DATA=\$(jq '.connection1.user = ${source_username}' <<< "$DB_DATA") 
-                            DB_DATA=\$(jq '.connection1.password = ${source_password}' <<< "$DB_DATA") 
-                            DB_DATA=\$(jq '.connection2.host = ${target_server_name}' <<< "$DB_DATA") 
-                            DB_DATA=\$(jq '.connection2.database = ${target_database_name}' <<< "$DB_DATA") 
-                            DB_DATA=\$(jq '.connection2.user = ${target_username}' <<< "$DB_DATA") 
-                            DB_DATA=\$(jq '.connection2.password = ${target_password}' <<< "$DB_DATA" > compareDBs.json) 
-                            cat compareDBs.json
+                            ./json_modify.sh
                         '''
 
                     }
