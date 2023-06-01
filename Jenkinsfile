@@ -80,11 +80,11 @@ pipeline {
                         sh 'npm install -g pg-compare'
                         echo 'Modifying pg-compare Schema... '
                         sh 'sudo cp -r pg-compare/Schema.js /usr/local/lib/node_modules/pg-compare/lib'
+                        sh 'cat ./compareDBs.json'
                         def JSON = sh(
                             script: 'cat ./compareDBs.json',
                             returnStdout: true
                         ).trim()
-                        echo JSON
                         def MODIFIED_JSON = sh(
                             script: """
                                 echo '${JSON}' |
@@ -101,7 +101,7 @@ pipeline {
                             returnStdout: true
                         ).trim()
                         writeFile file: './compareDBs.json', text: MODIFIED_JSON
-
+                        sh 'pg-compare ./compareDBs.json'
                     }
                     }
             }
