@@ -1,0 +1,33 @@
+{
+    "connection1": {
+        "host": "",
+        "user": "",
+        "password": "",
+        "database": "",
+        "port": 5432
+    },
+    "connection2": {
+        "host": "",
+        "user": "",
+        "password": "",
+        "database": "",
+        "port": 5432
+    },
+    "compare": {
+        "schema": {
+            "tables": true,
+            "fkeys": true,
+            "functions": true,
+            "indexes": true,
+            "types": true,
+            "views": true,
+            "sequences": true
+        },
+        "options": {
+            "mode": "full",
+            "owner": "postgres"
+        }
+    },
+    "output": "/tmp/delta.sql",
+    "verbose": true
+}

@@ -16,8 +16,8 @@ pipeline {
         INSTANCE_IDENTIFIER = "replication-instance-gworks"
         INSTANCE_CLASS = "dms.t3.micro"
         STORAGE_SIZE = "50"
-        SOURCE_ENGINE_NAME = params.SOURCE_DB_ENGINE
-        TARGET_ENGINE_NAME = params.TARGET_DB_ENGINE
+        SOURCE_ENGINE_NAME = "${params.SOURCE_DB_ENGINE}"
+        TARGET_ENGINE_NAME = "${params.TARGET_DB_ENGINE}"
 
     }
     stages {
@@ -56,11 +56,11 @@ pipeline {
                         env.TARGET_PASSWORD = target_secretJson.POSTGRES__PASSWORD
 
                         env.SOURCE_ENDPOINT_IDENTIFIER = "${env.PROJECT_NAME}source01endpoint"
-                        env.SOURCE_ENGINE_NAME = "postgres"
+
 
 
                         env.TARGET_ENDPOINT_IDENTIFIER = "${env.PROJECT_NAME}target01endpoint"
-                        env.TARGET_ENGINE_NAME = "postgres"
+
                         
                         echo "The value of POSTGRES_HOST_DB1 is: ${TARGET_ENDPOINT_IDENTIFIER}"
                         echo "The value of POSTGRES_HOST_DB2 is: ${SOURCE_ENDPOINT_IDENTIFIER}"       
@@ -80,6 +80,19 @@ pipeline {
                         sh 'npm install -g pg-compare'
                         echo 'Modifying pg-compare Schema... '
                         sh 'sudo cp -r pg-compare/Schema.js /usr/local/lib/node_modules/pg-compare/lib'
+                        sh """
+                            compareDB_data=\$(cat compareDBs.json)
+                            jq '.connection1.host = "$SOURCE_SERVER_NAME"' <<< "$json_data" > compareDBs.json
+                            jq '.connection1.database = "$SOURCE_DATABASE_NAME"' <<< "$json_data" > compareDBs.json
+                            jq '.connection1.user = "$SOURCE_USERNAME"' <<< "$json_data" > compareDBs.json
+                            jq '.connection1.password = "$SOURCE_PASSWORD"' <<< "$json_data" > compareDBs.json
+                            jq '.connection1.host = "$TARGET_SERVER_NAME"' <<< "$json_data" > compareDBs.json
+                            jq '.connection1.database = "$TARGET_DATABASE_NAME"' <<< "$json_data" > compareDBs.json
+                            jq '.connection1.user = "$TARGET_USERNAME"' <<< "$json_data" > compareDBs.json
+                            jq '.connection1.password = "$TARGET_PASSWORD"' <<< "$json_data" > compareDBs.json
+                            cat compareDBs.json
+                        """
+
                     }
                     }
             }
@@ -95,7 +108,7 @@ pipeline {
                     script {
                         echo "AWD DMS Migration..."  
                         sh """
-                            sh aws_dms_migration.sh
+                           # sh aws_dms_migration.sh
                         """    
                     }
                 }
