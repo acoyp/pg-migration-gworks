@@ -80,17 +80,24 @@ pipeline {
                         sh 'npm install -g pg-compare'
                         echo 'Modifying pg-compare Schema... '
                         sh 'sudo cp -r pg-compare/Schema.js /usr/local/lib/node_modules/pg-compare/lib'
+                        def source_server_name = env.SOURCE_SERVER_NAME 
+                        def source_database_name env.SOURCE_DATABASE_NAME
+                        def source_username = env.SOURCE_USERNAME
+                        def source_password = env.SOURCE_PASSWORD 
+                        def target_server_name = env.TARGET_SERVER_NAME
+                        def target_database_name = env.TARGET_DATABASE_NAME
+                        def target_username = env.TARGET_USERNAME
+                        def target_password = env.TARGET_PASSWORD
                         sh '''
                             DB_DATA=\$(cat compareDBs.json)
-                            DB_DATA=\$(jq '.connection1.host = "${SOURCE_SERVER_NAME}"' <<< "$DB_DATA")
-                            DB_DATA=\$(jq '.connection1.database = "${SOURCE_DATABASE_NAME}"' <<< "$DB_DATA")
-                            DB_DATA=\$(jq '.connection1.user = "${SOURCE_USERNAME}"' <<< "$DB_DATA") 
-                            DB_DATA=\$(jq '.connection1.password = "${SOURCE_PASSWORD}"' <<< "$DB_DATA") 
-                            DB_DATA=\$(jq '.connection2.host = "${TARGET_SERVER_NAME}"' <<< "$DB_DATA") 
-                            DB_DATA=\$(jq '.connection2.database = "${TARGET_DATABASE_NAME}"' <<< "$DB_DATA") 
-                            DB_DATA=\$(jq '.connection2.user = "${TARGET_USERNAME}"' <<< "$DB_DATA") 
-                            DB_DATA=\$(jq '.connection2.password = "${TARGET_PASSWORD}"' <<< "$DB_DATA" > compareDBs.json) 
-
+                            DB_DATA=\$(jq '.connection1.host = "${source_server_name}"' <<< "$DB_DATA")
+                            DB_DATA=\$(jq '.connection1.database = "${source_database_name}"' <<< "$DB_DATA")
+                            DB_DATA=\$(jq '.connection1.user = "${source_username}"' <<< "$DB_DATA") 
+                            DB_DATA=\$(jq '.connection1.password = "${source_password}"' <<< "$DB_DATA") 
+                            DB_DATA=\$(jq '.connection2.host = "${target_server_name}"' <<< "$DB_DATA") 
+                            DB_DATA=\$(jq '.connection2.database = "${target_database_name}"' <<< "$DB_DATA") 
+                            DB_DATA=\$(jq '.connection2.user = "${target_username}"' <<< "$DB_DATA") 
+                            DB_DATA=\$(jq '.connection2.password = "${target_password}"' <<< "$DB_DATA" > compareDBs.json) 
                             cat compareDBs.json
                         '''
 
