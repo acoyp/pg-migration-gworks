@@ -7,8 +7,8 @@ pipeline {
         string(name: 'AWS_CREDENTIALS_ID', defaultValue: 'aws-fercho', description: 'aws credentials for CLI')
         string(name: 'SOURCE_SECRETS_ID', defaultValue: 'mydb0-credentials2', description: 'aws secrets name for Source DB')
         string(name: 'TARGET_SECRETS_ID', defaultValue: 'mydb1-credentials2', description: 'aws secrets name for Target DB')
-        choice(name: 'SOURCE_DB_ENGINE', choices: ['mysql' , 'oracle' , 'postgres' , 'mariadb' , 'aurora' , 'aurora-postgresql' ,'db2'], defaultValue: 'postgres', description: '')
-        choice(name: 'TARGET_DB_ENGINE', choices: ['mysql' , 'oracle' , 'postgres' , 'mariadb' , 'aurora' , 'aurora-postgresql' ,'db2'], defaultValue: 'postgres', description: '')
+        choice(name: 'SOURCE_DB_ENGINE', choices: ['mysql' , 'oracle' , 'postgres' , 'mariadb' , 'aurora' , 'aurora-postgresql' ,'db2'], description: '')
+        choice(name: 'TARGET_DB_ENGINE', choices: ['mysql' , 'oracle' , 'postgres' , 'mariadb' , 'aurora' , 'aurora-postgresql' ,'db2'], description: '')
     }
     environment{
         AWS_REGION = 'us-east-1'
