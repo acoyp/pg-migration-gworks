@@ -12,11 +12,11 @@ STORAGE_SIZE=50
 SUBNET_GROUP_IDENTIFIER="my-subnet-group"
 
 SOURCE_ENDPOINT_IDENTIFIER="${PROJECT_NAME}source01endpoint"
-SOURCE_ENGINE_NAME="postgres"
+
 
 
 TARGET_ENDPOINT_IDENTIFIER="${PROJECT_NAME}target01endpoint"
-TARGET_ENGINE_NAME="postgres"
+
 
 
 # Create source endpoint

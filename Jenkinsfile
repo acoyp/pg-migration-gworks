@@ -3,10 +3,12 @@
 pipeline {
     agent any
     parameters {
-        string(name: 'REPOSITORY_NAME', defaultValue: 'java-spring-demo-tb', description: '')
+        string(name: 'REPOSITORY_URL', defaultValue: '', description: 'repository url that contains this project')
         string(name: 'AWS_CREDENTIALS_ID', defaultValue: 'aws-fercho', description: 'aws credentials for CLI')
-        string(name: 'SOURCE_SECRETS_ID', defaultValue: 'mydb0-credentials2', description: 'aws secrets for Source DB')
-        string(name: 'TARGET_SECRETS_ID', defaultValue: 'mydb1-credentials2', description: 'aws secrets for Target DB')
+        string(name: 'SOURCE_SECRETS_ID', defaultValue: 'mydb0-credentials2', description: 'aws secrets name for Source DB')
+        string(name: 'TARGET_SECRETS_ID', defaultValue: 'mydb1-credentials2', description: 'aws secrets name for Target DB')
+        choice(name: 'SOURCE_DB_ENGINE', choices: ['mysql' , 'oracle' , 'postgres' , 'mariadb' , 'aurora' , 'aurora-postgresql' ,'db2'], defaultValue: 'postgres', description: '')
+        choice(name: 'TARGET_DB_ENGINE', choices: ['mysql' , 'oracle' , 'postgres' , 'mariadb' , 'aurora' , 'aurora-postgresql' ,'db2'], defaultValue: 'postgres', description: '')
     }
     environment{
         AWS_REGION = 'us-east-1'
@@ -14,6 +16,9 @@ pipeline {
         INSTANCE_IDENTIFIER = "replication-instance-gworks"
         INSTANCE_CLASS = "dms.t3.micro"
         STORAGE_SIZE = "50"
+        SOURCE_ENGINE_NAME = params.SOURCE_DB_ENGINE
+        TARGET_ENGINE_NAME = params.TARGET_DB_ENGINE
+
     }
     stages {
         stage('checkout') {
@@ -32,6 +37,7 @@ pipeline {
                     secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
                     ]]) {
                     script {
+                        
                         def source_secretValue = sh(script: "aws secretsmanager get-secret-value --secret-id ${params.SOURCE_SECRETS_ID} --query 'SecretString' --output text", returnStdout: true).trim()
                         def target_secretValue = sh(script: "aws secretsmanager get-secret-value --secret-id ${params.TARGET_SECRETS_ID} --query 'SecretString' --output text", returnStdout: true).trim()
                         
@@ -60,6 +66,22 @@ pipeline {
                         echo "The value of POSTGRES_HOST_DB2 is: ${SOURCE_ENDPOINT_IDENTIFIER}"       
                     }
                 }
+            }
+        }
+        stage('PG Compare validation') {
+            steps {
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: "${params.AWS_CREDENTIALS_ID}",
+                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                    ]]) {
+                    script {
+                        sh 'npm install -g pg-compare'
+                        echo 'Modifying pg-compare Schema... '
+                        sh 'sudo cp -r pg-compare/Schema.js /usr/local/lib/node_modules/pg-compare/lib'
+                    }
+                    }
             }
         }
         stage('Build') {
