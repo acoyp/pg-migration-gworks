@@ -49,11 +49,11 @@ pipeline {
                         env.SOURCE_SERVER_NAME = source_secretJson.POSTGRES_HOST
                         env.SOURCE_DATABASE_NAME = source_secretJson.POSTGRES_DATABASE
                         env.SOURCE_USERNAME = source_secretJson.POSTGRES_USER
-                        env.SOURCE_PASSWORD = source_secretJson.POSTGRES__PASSWORD
+                        env.SOURCE_PASSWORD = source_secretJson.POSTGRES_PASSWORD
                         env.TARGET_SERVER_NAME = target_secretJson.POSTGRES_HOST
                         env.TARGET_DATABASE_NAME = target_secretJson.POSTGRES_DATABASE
                         env.TARGET_USERNAME = target_secretJson.POSTGRES_USER
-                        env.TARGET_PASSWORD = target_secretJson.POSTGRES__PASSWORD
+                        env.TARGET_PASSWORD = target_secretJson.POSTGRES_PASSWORD
 
                         env.SOURCE_ENDPOINT_IDENTIFIER = "${env.PROJECT_NAME}source01endpoint"
 
@@ -95,7 +95,7 @@ pipeline {
                                 jq --arg target_host "${env.TARGET_SERVER_NAME}" '.connection2.host = \$target_host' |
                                 jq --arg target_db "${env.TARGET_DATABASE_NAME}" '.connection2.database = \$target_db' |
                                 jq --arg target_user "${env.TARGET_USERNAME}" '.connection2.user = \$target_user' |
-                                jq --arg target_pw "${env.TARGET_USERNAME}" '.connection2.password = \$target_pw' |
+                                jq --arg target_pw "${env.TARGET_PASSWORD}" '.connection2.password = \$target_pw' |
                                 jq
                                 """,
                             returnStdout: true
