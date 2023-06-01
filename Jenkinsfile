@@ -87,12 +87,12 @@ pipeline {
                         echo JSON
                         def MODIFIED_JSON = sh(
                             script: """
-                                echo "${JSON}" |
+                                echo '${JSON}' |
                                 jq --arg source_host "${env.SOURCE_SERVER_NAME}" '.connection1.host = \$source_host' |
                                 jq --arg source_db "${env.SOURCE_DATABASE_NAME}" '.connection1.database = \$source_db' |
                                 jq --arg source_user "${env.SOURCE_USERNAME}" '.connection1.user = \$source_user' |
                                 jq --arg source_pw "${env.SOURCE_PASSWORD}" '.connection1.password = \$source_pw' |
-                                jq --arg target_host "${env.TARGET_SERVER_NAME}".connection2.host = \$target_host' |
+                                jq --arg target_host "${env.TARGET_SERVER_NAME}" '.connection2.host = \$target_host' |
                                 jq --arg target_db "${env.TARGET_DATABASE_NAME}" '.connection2.database = \$target_db' |
                                 jq --arg target_user "${env.TARGET_USERNAME}" '.connection2.user = \$target_user' |
                                 jq --arg target_pw "${env.TARGET_USERNAME}" '.connection2.password = \$target_pw' |
