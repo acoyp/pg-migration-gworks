@@ -102,6 +102,11 @@ pipeline {
                         ).trim()
                         writeFile file: './compareDBs.json', text: MODIFIED_JSON
                         sh 'pg-compare ./compareDBs.json'
+
+                        sh '''
+                            echo PG COMPARE RESULTS:...
+                            cat ./delta.sql
+                        '''
                     }
                     }
             }

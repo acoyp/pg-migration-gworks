@@ -28,6 +28,6 @@
             "owner": "postgres"
         }
     },
-    "output": "/tmp/delta.sql",
+    "output": "./delta.sql",
     "verbose": true
 }
