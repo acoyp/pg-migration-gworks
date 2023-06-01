@@ -81,7 +81,7 @@ pipeline {
                         echo 'Modifying pg-compare Schema... '
                         sh 'sudo cp -r pg-compare/Schema.js /usr/local/lib/node_modules/pg-compare/lib'
                         def source_server_name = env.SOURCE_SERVER_NAME 
-                        def source_database_name env.SOURCE_DATABASE_NAME
+                        def source_database_name = env.SOURCE_DATABASE_NAME
                         def source_username = env.SOURCE_USERNAME
                         def source_password = env.SOURCE_PASSWORD 
                         def target_server_name = env.TARGET_SERVER_NAME
