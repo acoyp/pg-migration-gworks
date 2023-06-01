@@ -80,7 +80,7 @@ pipeline {
                         sh 'npm install -g pg-compare'
                         echo 'Modifying pg-compare Schema... '
                         sh 'sudo cp -r pg-compare/Schema.js /usr/local/lib/node_modules/pg-compare/lib'
-                        sh """
+                        sh '''
                             DB_DATA=\$(cat compareDBs.json)
                             DB_DATA=\$(jq '.connection1.host = "${SOURCE_SERVER_NAME}"' <<< "$DB_DATA")
                             DB_DATA=\$(jq '.connection1.database = "${SOURCE_DATABASE_NAME}"' <<< "$DB_DATA")
@@ -92,7 +92,7 @@ pipeline {
                             DB_DATA=\$(jq '.connection2.password = "${TARGET_PASSWORD}"' <<< "$DB_DATA" > compareDBs.json) 
 
                             cat compareDBs.json
-                        """
+                        '''
 
                     }
                     }
