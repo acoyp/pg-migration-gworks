@@ -3,7 +3,7 @@
 pipeline {
     agent any
     parameters {
-        string(name: 'REPOSITORY_URL', defaultValue: '', description: 'repository url that contains this project')
+        string(name: 'REPOSITORY_URL', defaultValue: 'https://github.com/acoyp/pg-migration-gworks.git', description: 'repository url that contains this project')
         string(name: 'AWS_CREDENTIALS_ID', defaultValue: 'aws-fercho', description: 'aws credentials for CLI')
         string(name: 'SOURCE_SECRETS_ID', defaultValue: 'mydb0-credentials2', description: 'aws secrets name for Source DB')
         string(name: 'TARGET_SECRETS_ID', defaultValue: 'mydb1-credentials2', description: 'aws secrets name for Target DB')
@@ -82,14 +82,14 @@ pipeline {
                         sh 'sudo cp -r pg-compare/Schema.js /usr/local/lib/node_modules/pg-compare/lib'
                         sh """
                             compareDB_data=\$(cat compareDBs.json)
-                            jq '.connection1.host = "$SOURCE_SERVER_NAME"' <<< "$json_data" > compareDBs.json
-                            jq '.connection1.database = "$SOURCE_DATABASE_NAME"' <<< "$json_data" > compareDBs.json
-                            jq '.connection1.user = "$SOURCE_USERNAME"' <<< "$json_data" > compareDBs.json
-                            jq '.connection1.password = "$SOURCE_PASSWORD"' <<< "$json_data" > compareDBs.json
-                            jq '.connection1.host = "$TARGET_SERVER_NAME"' <<< "$json_data" > compareDBs.json
-                            jq '.connection1.database = "$TARGET_DATABASE_NAME"' <<< "$json_data" > compareDBs.json
-                            jq '.connection1.user = "$TARGET_USERNAME"' <<< "$json_data" > compareDBs.json
-                            jq '.connection1.password = "$TARGET_PASSWORD"' <<< "$json_data" > compareDBs.json
+                            jq '.connection1.host = "$SOURCE_SERVER_NAME"' <<< "$compareDB_data" > compareDBs.json
+                            jq '.connection1.database = "$SOURCE_DATABASE_NAME"' <<< "$compareDB_data" > compareDBs.json
+                            jq '.connection1.user = "$SOURCE_USERNAME"' <<< "$compareDB_data" > compareDBs.json
+                            jq '.connection1.password = "$SOURCE_PASSWORD"' <<< "$compareDB_data" > compareDBs.json
+                            jq '.connection1.host = "$TARGET_SERVER_NAME"' <<< "$compareDB_data" > compareDBs.json
+                            jq '.connection1.database = "$TARGET_DATABASE_NAME"' <<< "$compareDB_data" > compareDBs.json
+                            jq '.connection1.user = "$TARGET_USERNAME"' <<< "$compareDB_data" > compareDBs.json
+                            jq '.connection1.password = "$TARGET_PASSWORD"' <<< "$compareDB_data" > compareDBs.json
                             cat compareDBs.json
                         """
 
