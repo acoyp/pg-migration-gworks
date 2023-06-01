@@ -87,7 +87,7 @@ pipeline {
                         echo JSON
                         def MODIFIED_JSON = sh(
                             script: """
-                                echo '${JSON}' |
+                                echo "${JSON}" |
                                 jq --arg source_host "${env.SOURCE_SERVER_NAME}" '.connection1.host = \$source_host' |
                                 jq --arg source_db "${env.SOURCE_DATABASE_NAME}" '.connection1.database = \$source_db' |
                                 jq --arg source_user "${env.SOURCE_USERNAME}" '.connection1.user = \$source_user' |
