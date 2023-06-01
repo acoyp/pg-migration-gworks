@@ -7,8 +7,8 @@ pipeline {
         string(name: 'AWS_CREDENTIALS_ID', defaultValue: 'aws-fercho', description: 'aws credentials for CLI')
         string(name: 'SOURCE_SECRETS_ID', defaultValue: 'mydb0-credentials2', description: 'aws secrets name for Source DB')
         string(name: 'TARGET_SECRETS_ID', defaultValue: 'mydb1-credentials2', description: 'aws secrets name for Target DB')
-        choice(name: 'SOURCE_DB_ENGINE', choices: ['mysql' , 'oracle' , 'postgres' , 'mariadb' , 'aurora' , 'aurora-postgresql' ,'db2'], description: '')
-        choice(name: 'TARGET_DB_ENGINE', choices: ['mysql' , 'oracle' , 'postgres' , 'mariadb' , 'aurora' , 'aurora-postgresql' ,'db2'], description: '')
+        choice(name: 'SOURCE_DB_ENGINE', choices: ['postgres' , 'mysql' , 'oracle' , 'mariadb' , 'aurora' , 'aurora-postgresql' ,'db2'], description: '')
+        choice(name: 'TARGET_DB_ENGINE', choices: ['postgres' , 'mysql' , 'oracle' , 'mariadb' , 'aurora' , 'aurora-postgresql' ,'db2'], description: '')
     }
     environment{
         AWS_REGION = 'us-east-1'
@@ -81,15 +81,15 @@ pipeline {
                         echo 'Modifying pg-compare Schema... '
                         sh 'sudo cp -r pg-compare/Schema.js /usr/local/lib/node_modules/pg-compare/lib'
                         sh """
-                            compareDB_data=\$(cat compareDBs.json)
-                            compareDB_data=\$(jq '.connection1.host = "${SOURCE_SERVER_NAME}"' <<< "$compareDB_data")
-                            compareDB_data=\$(jq '.connection1.database = "${SOURCE_DATABASE_NAME}"' <<< "$compareDB_data")
-                            compareDB_data=\$(jq '.connection1.user = "${SOURCE_USERNAME}"' <<< "$compareDB_data") 
-                            compareDB_data=\$(jq '.connection1.password = "${SOURCE_PASSWORD}"' <<< "$compareDB_data") 
-                            compareDB_data=\$(jq '.connection2.host = "${TARGET_SERVER_NAME}"' <<< "$compareDB_data") 
-                            compareDB_data=\$(jq '.connection2.database = "${TARGET_DATABASE_NAME}"' <<< "$compareDB_data") 
-                            compareDB_data=\$(jq '.connection2.user = "${TARGET_USERNAME}"' <<< "$compareDB_data") 
-                            compareDB_data=\$(jq '.connection2.password = "${TARGET_PASSWORD}"' <<< "$compareDB_data" > compareDBs.json) 
+                            DB_DATA\$(cat compareDBs.json)
+                            DB_DATA\$(jq '.connection1.host = "${SOURCE_SERVER_NAME}"' <<< "$compareDB_data")
+                            DB_DATA\$(jq '.connection1.database = "${SOURCE_DATABASE_NAME}"' <<< "$compareDB_data")
+                            DB_DATA\$(jq '.connection1.user = "${SOURCE_USERNAME}"' <<< "$compareDB_data") 
+                            DB_DATA\$(jq '.connection1.password = "${SOURCE_PASSWORD}"' <<< "$compareDB_data") 
+                            DB_DATA\$(jq '.connection2.host = "${TARGET_SERVER_NAME}"' <<< "$compareDB_data") 
+                            DB_DATA\$(jq '.connection2.database = "${TARGET_DATABASE_NAME}"' <<< "$compareDB_data") 
+                            DB_DATA\$(jq '.connection2.user = "${TARGET_USERNAME}"' <<< "$compareDB_data") 
+                            DB_DATA\$(jq '.connection2.password = "${TARGET_PASSWORD}"' <<< "$compareDB_data" > compareDBs.json) 
 
                             cat compareDBs.json
                         """
