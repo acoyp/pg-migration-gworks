@@ -1,4 +1,5 @@
 #!/bin/bash
+
 cat compareDBs.json
 DB_DATA=`cat compareDBs.json`
 DB_DATA=`jq ".connection1.host = \"$SOURCE_SERVER_NAME\"" <<< "$DB_DATA"`
