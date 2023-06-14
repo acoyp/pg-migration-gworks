@@ -13,11 +13,7 @@ SUBNET_GROUP_IDENTIFIER="my-subnet-group"
 
 SOURCE_ENDPOINT_IDENTIFIER="${PROJECT_NAME}source01endpoint"
 
-
-
 TARGET_ENDPOINT_IDENTIFIER="${PROJECT_NAME}target01endpoint"
-
-
 
 # Create source endpoint
 if [ `aws dms describe-endpoints --query "Endpoints[?EndpointIdentifier=='$SOURCE_ENDPOINT_IDENTIFIER'].EndpointIdentifier" --output text` ]; then

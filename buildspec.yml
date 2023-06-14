@@ -15,9 +15,11 @@ phases:
       nodejs: 14
     commands:
       - npm install -g pg-compare
-      # - wget https://s3.amazonaws.com/publicsctdownload/Ubuntu/aws-schema-conversion-tool-1.0.latest.zip
-      # - unzip aws-schema-conversion-tool-1.0.latest.zip
-      # - sudo dpkg -i aws-schema-conversion-tool-1.0.latest/aws-schema-conversion-tool-1.0.build-number.deb
+      - apt-get install -y \
+          make \
+          curl \
+          python3 python3-pip \
+          postgresql-client-14
       - echo "Installing Terraform"
       - curl -o terraform.zip https://releases.hashicorp.com/terraform/0.15.5/terraform_0.15.5_linux_amd64.zip
       - unzip terraform.zip -d /usr/local/bin/
@@ -28,18 +30,27 @@ phases:
       - ls
       - echo Modifying pg-compare Schema
       - sudo cp -r pg-compare/Schema.js /usr/local/lib/node_modules/pg-compare/lib
-      - echo "Executing Terraform Init"
-      - cd terraform
-      - terraform init -backend-config="bucket=pg-compare-terraform" -backend-config="key=my-state-file.tfstate" -backend-config="region=us-east-1"
+      - echo 'compareDB.json' |
+          jq --arg source_host "${env.SOURCE_SERVER_NAME}" '.connection1.host = \$source_host' |
+          jq --arg source_db "${env.SOURCE_DATABASE_NAME}" '.connection1.database = \$source_db' |
+          jq --arg source_user "${env.SOURCE_USERNAME}" '.connection1.user = \$source_user' |
+          jq --arg source_pw "${env.SOURCE_PASSWORD}" '.connection1.password = \$source_pw' |
+          jq --arg target_host "${env.TARGET_SERVER_NAME}" '.connection2.host = \$target_host' |
+          jq --arg target_db "${env.TARGET_DATABASE_NAME}" '.connection2.database = \$target_db' |
+          jq --arg target_user "${env.TARGET_USERNAME}" '.connection2.user = \$target_user' |
+          jq --arg target_pw "${env.TARGET_PASSWORD}" '.connection2.password = \$target_pw' |
+          jq
+      - cat compareDB.json
       - cd ..
       - ls
 
   build:
     commands:
     # Tests 1
-      - echo Execute Main AWS DBs Migration
-      - chmod 777 aws_dms_migration.sh 
-      - ./aws_dms_migration.sh 
+      - echo Execute pg-compare
+      - echo Conditional PG Compare
+      - echo pg_dump if it's necessary
+
   post_build:
     commands:
       - echo Build completed on `date`  
