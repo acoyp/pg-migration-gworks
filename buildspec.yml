@@ -40,7 +40,9 @@ phases:
           jq --arg target_user "${TARGET_USERNAME}" '.connection2.user = $target_user' |
           jq --arg target_pw "${TARGET_PASSWORD}" '.connection2.password = $target_pw' > compareDBs.json
       - cat compareDBs.json
-      - 
+      - pg-compare compareDBs.json
+      - ls
+      - cat delta.sql
       - cd ..
       - ls
 
