@@ -29,6 +29,7 @@ phases:
       - echo Modifying pg-compare Schema
       - sudo cp -r pg-compare/Schema.js /usr/local/lib/node_modules/pg-compare/lib
       - JSON=`cat compareDBs.json`
+      - echo $JSON
       - echo $JSON |
           jq --arg source_host "${env.SOURCE_SERVER_NAME}" '.connection1.host = \$source_host' |
           jq --arg source_db "${env.SOURCE_DATABASE_NAME}" '.connection1.database = \$source_db' |
