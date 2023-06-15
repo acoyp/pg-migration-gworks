@@ -48,9 +48,9 @@ phases:
       - cat delta.sql
       - match=$(bash pg-compare-test.sh)
       - |
-        if [ $match = 'YES']; then
+        if [ $match = 'YES' ]; then
           echo "The databases match"
-        elif [ $match = 'NO' ]
+        elif [ $match = 'NO' ]; then
           echo "The databases do not match. Starting replication..."
         else
           echo "pg compare has issues..."
