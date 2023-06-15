@@ -14,7 +14,7 @@ phases:
     runtime-versions:
       nodejs: 18
     commands:
-      - npm install -g /usr/local/lib/node_modules/pg-compare/lib
+      - npm install -g pg-compare
       - apt update
       - apt install make curl jq postgresql-client-14 -y
       - echo "Installing Terraform"
