@@ -12,7 +12,7 @@ env:
 phases:
   install:
     runtime-versions:
-      nodejs: 14
+      nodejs: 18
     commands:
       - npm install -g pg-compare
       - sudo sed -i '2 s/^/# /' /etc/apt/sources.list
