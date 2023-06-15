@@ -46,7 +46,7 @@ phases:
       - pg-compare compareDBs.json
       - ls
       - cat delta.sql
-      - match=$(sh pg-compare-test.sh)
+      - match=$(bash pg-compare-test.sh)
       - |
         if [ $match = 'YES']; then
           echo "The databases match"
