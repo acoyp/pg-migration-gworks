@@ -14,8 +14,7 @@ phases:
     runtime-versions:
       nodejs: 18
     commands:
-      - npm install -g pg-compare
-      - sudo sed -i '2 s/^/# /' /etc/apt/sources.list
+      - npm install -g /usr/local/lib/node_modules/pg-compare/lib
       - apt update
       - apt install make curl jq postgresql-client-14 -y
       - echo "Installing Terraform"
@@ -40,18 +39,23 @@ phases:
           jq --arg target_user "${TARGET_USERNAME}" '.connection2.user = $target_user' |
           jq --arg target_pw "${TARGET_PASSWORD}" '.connection2.password = $target_pw' > compareDBs.json
       - cat compareDBs.json
-      - pg-compare compareDBs.json
-      - ls
-      - cat delta.sql
-      - cd ..
-      - ls
 
   build:
     commands:
     # Tests 1
-      - echo Execute pg-compare
-      - echo Conditional PG Compare
-      - echo pg_dump if it's necessary
+      - pg-compare compareDBs.json
+      - ls
+      - cat delta.sql
+      - match=$(sh pg-compare-test.sh)
+      - |
+        if [ $match = 'YES']; then
+          echo "The databases match"
+        elif [ $match = 'NO' ]
+          echo "The databases do not match. Starting replication..."
+        else
+          echo "pg compare has issues..."
+        fi
+      - echo Execute pg-dump
 
   post_build:
     commands:
