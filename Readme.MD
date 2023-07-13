@@ -1,76 +1,67 @@
-# AWS DB Migration - gWorks
+# Schema migration RDS - Postgres
 
-## Project Overview
+To execute this migration it ought to follow the following steps to create and configure the **AWS CodeBuild Service**
 
-This Jenkins project is designed to automate the migration process for a source and a target DB. It utilizes Jenkins pipelines to define the stages and steps required for checkout, pre-build and build of this migration idea.
+## AWS CodeBuild Configuration
 
-The project contains Jenkinsfile, shell script and replacement package for the pg-compare tool to implement the AWS Migration using AWS DMS as main Migration tool.
+### Step 1: Set Up Your Environment
 
-## Prerequisites
+1. Open the AWS Management Console and navigate to the AWS CodeBuild service.
+2. Click on "Create build project" to start creating your CodeBuild project.
 
-Before setting up the Jenkins project, ensure that you have the following prerequisites:
+### Step 2: Configure Your Build Project
 
-- Jenkins server installed and running.
-- Access to the Jenkins server with appropriate administrative privileges.
-- Access to the Github repository with appropriate administrative privileges. (Configure proper credentials)
-- Access to the AWS Account with with appropriate privileges. (Configure proper credentials)
-- Install the required plugins in your Jenkins instance:
-  - CloudBees AWS Credentials Plugin
-  - Pipeline: AWS Steps
-  - Credentials Plugin
-  - Git Plugin
+1. **Project Configuration**
 
-## Configuration Steps
+   - Provide a meaningful name for your build project.
+   - Optionally, add a description to provide more details.
+   - Choose the source provider where your application's source code is hosted (e.g., CodeCommit, GitHub, Bitbucket, etc.).
+     > Connect using OAuth or Github PAT
+   - Connect your source provider and select the repository and branch/tag to build.
 
-Follow the steps below to configure the Jenkins project:
+2. **Environment Configuration**
 
-1. **Clone the project**: Clone the project repository to your local machine or Jenkins server.
+   - Select the runtime environment for your build.
+     > Ubuntu OS - Standard Runtime - aws/codebuild/standard:5.0
+   - Choose the desired compute type and image for your build environment.
+   - Define ENV Vars
+     This credentials must be stored as is shown
+     - SOURCE_DB_SECRETS = The ARN of the Secrets that contains SOURCE_PG_DATABASE credentials
+     - TARGET_DB_SECRETS = The ARN of the Secrets that contains TARGET_PG_DATABASE credentials
+   - Logs configuration (Optional)
 
-2. **Create Jenkins credentials**: Create the necessary credentials in Jenkins to access external systems such as source code repositories, Docker registries, or AWS services. To create credentials:
+3. **Buildspec Configuration**
 
-   - Navigate to Jenkins dashboard.
-   - Click on "Credentials" in the left-hand menu.
-   - Click on "Global credentials" or "System" depending on your Jenkins version.
-   - Click on "Add Credentials" to create a new set of credentials.
-   - Follow the prompts to specify the credential type, such as username/password, SSH key, or AWS access key.
+   - The `buildspec.yml` file is in the repo, 'll be automatically consumed by the service
 
-3. **Configure project parameters**: The Jenkins project may have configurable parameters that allow you to customize the build and deployment process. These parameters were configured in the Jenkinsfile and should be defined the default value fo each one by code or in the Jenkins Console:
+4. **Artifacts Configuration** (OPTIONAL)
 
-   1. **REPOSITORY_URL:** Description of parameter
-   2. **AWS_CREDENTIALS_ID:** AWS Credentials ID configured on Jenkins
-   3. **GITHUB_CREDENTIALS_ID:** GITHUB Credentials ID configured on Jenkins
-   4. **SOURCE_SECRETS_ID:** Source DB Secret Name configured on AWS Secrets Manager service
-   5. **TARGET_SECRETS_ID:** Target DB Secret Name configured on AWS Secrets Manager service
-   6. **SOURCE_DB_ENGINE:** (List) mysql" , "oracle" , "postgres" , "mariadb" , "aurora" , "aurora-postgresql" ,"db2"
-   7. **TARGET_DB_ENGINE:** (List) mysql" , "oracle" , "postgres" , "mariadb" , "aurora" , "aurora-postgresql" ,"db2"
+   - Specify how CodeBuild should package and provide the build output artifacts.
+   - Choose the desired artifact type, such as S3, CodeDeploy, or No artifacts.
+   - Configure the necessary settings based on the chosen artifact type.
 
-4. **Update Jenkinsfile**: The Jenkinsfile defines the pipeline stages and steps for your project. Open the Jenkinsfile in your project repository and update it to reflect the specific stages, steps, and configuration for your application. Make sure to include references to the defined parameters and credentials.
+5. **Logs Configuration**
 
-5. **Configure Jenkins job**: In the Jenkins dashboard, create a new Jenkins job and configure it as follows:
+   - Choose the desired CloudWatch Logs settings for your build logs.
+   - Configure log group and stream settings to capture build logs.
 
-   - Set the appropriate project name and description.
-   - Specify the repository URL or reference the Jenkinsfile directly in the project's repository.
-   - Configure any additional settings required for your project, such as build triggers, notifications, or post-build actions.
-   - Save the job configuration.
+6. **Additional Configurations**
+   - Review and configure any other advanced settings or optional features as per your project requirements.
 
-6. **Build the project**: Trigger the Jenkins job to start the build process. Monitor the console output and logs to ensure the build and deployment stages are executed successfully.
+### Step 3: Start Your Build
 
-## Usage
+1. Review the project configuration and ensure all settings are correct.
+2. Click on "Create build project" to create your AWS CodeBuild project.
 
-To use the Jenkins project:
+### Step 4: Monitor Your Build
 
-1. Open the Jenkins dashboard and navigate to the project.
-2. Provide the required parameters when starting a build.
-3. Monitor the build progress and review the console output for any errors or warnings regarding to AWS DMS or the Secrets Manager service.
-4. Access to the AWS DMS service and take a look of the Target DB where is pointed the Migration.
+1. After starting a build, you can monitor its progress from the CodeBuild console.
+2. Once the build completes, you can view the build logs and any associated artifacts.
 
-## Troubleshooting
+## PG Compare Logic
 
-If you encounter any issues during the setup or execution of the Jenkins project, refer to the following troubleshooting steps:
+For this procedure the pg compare will work as is shown in the next flow diagram:
+[!Alt Text](assets/pg_compare_flow.png)
 
-- Check the Jenkins server logs for any error messages or exceptions.
-- Review the project configuration and ensure that all required parameters and credentials are properly set.
-- Verify the Jenkinsfile to ensure it accurately reflects the desired build and deployment stages.
-- Ensure that the Jenkins server has appropriate permissions and access to AWS services or Github Credentials.
-
-## License
+An the entire Build Project logic will work as is shown in the next illustration:
+[!Alt Text](assets/codebuild_flow.png)
