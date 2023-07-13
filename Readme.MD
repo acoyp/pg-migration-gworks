@@ -62,8 +62,8 @@ To execute this migration it ought to follow the following steps to create and c
 
 For this procedure the pg compare will work as is shown in the next flow diagram:
 
-[!Alt Text](assets/pg_compare_flow.png "PG Compare Flow")
+![Alt Text](assets/pg_compare_flow.png "PG Compare Flow")
 
 An the entire Build Project logic will work as is shown in the next illustration:
 
-[!Alt Text](assets/codebuild_flow.png "CodeBuild Diagram")
+![Alt Text](assets/codebuild_flow.png "CodeBuild Diagram")
